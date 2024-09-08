@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PaymentSuccessful;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\IBookRepository;
+use App\Repositories\Interfaces\ICouponRepository;
 use App\Repositories\Interfaces\IOrderItemRepository;
 use App\Repositories\Interfaces\IOrderRepository;
 use App\Repositories\Interfaces\ITransactionRepository;
@@ -18,6 +20,7 @@ class PurchaseController extends Controller
     protected $orderItemRepository;
     protected $bookRepository;
     protected $transactionRepository;
+    protected $couponRepository;
     protected $paymentRepository;
 
     public function __construct(
@@ -25,6 +28,7 @@ class PurchaseController extends Controller
         IOrderItemRepository $orderItemRepository, 
         IBookRepository $bookRepository,
         ITransactionRepository $transactionRepository,
+        ICouponRepository $couponRepository,
         PaymentRepository $paymentRepository
         )
     {
@@ -32,47 +36,55 @@ class PurchaseController extends Controller
         $this->orderItemRepository = $orderItemRepository;
         $this->bookRepository = $bookRepository;
         $this->transactionRepository = $transactionRepository;
+        $this->couponRepository = $couponRepository;
         $this->paymentRepository = $paymentRepository;
     }
 
 
     public function handlePurchaseProcessing(Request $request)
     {
-        $order = $this->handleCreateOrder($request->all());
-        $transaction = $this->handleCreateTransaction($request->gateway, $order);
-        $response = $this->createTransactionInPaymentGateway($request->gateway, $transaction);
-        $transaction = $this->handleUpdateTransaction($request->gateway, $transaction->id, $response);
-        
-        return $this->createPaymentGatewayLink($request->gateway, $response);
+        try {
+            $order = $this->handleCreateOrder($request->all());
+            if(isset($request->discount_code)) $order = $this->handleApplyCoupon($request, $order);
+            $transaction = $this->handleCreateTransaction($request->gateway, $order, $request);
+            $response = $this->createTransactionInPaymentGateway($request->gateway, $transaction);
+            $transaction = $this->handleUpdateTransaction($request->gateway, $transaction->id, $response);
+            return $this->createPaymentGatewayLink($request->gateway, $response);
+        } catch (Exception $error) {
+            return Response::error($error->getMessage(), null);
+        }
     }
 
 
     public function handleVerifyProcessing(Request $request)
     {
+        // dd($request);
         $gateway = $this->identifyGatewayByParams($request);
+        $is_successful = $this->paymentRepository->getStatus($gateway, $request);
+        if(!$is_successful){
+            $error = 'پرداخت ناموفق بود';
+            return redirect()->away("http://localhost:3000/result?result=failed&error=$error");
+        }
+
         $uu_id = $this->paymentRepository->getUuId($gateway, $request);
         $transaction = $this->transactionRepository->findWhereFirst('uu_id', $uu_id);
-
         if(!$transaction){
             $error = 'تراکنش یافت نشد';
-            return Response::error($error, null, 403);
+            return redirect()->away("http://localhost:3000/result?result=failed&error=$error");
         }
         
         $data = $this->paymentRepository->prepareVerifyProcessingData($gateway, $request);
         $response = $this->paymentRepository->verifyTransaction($gateway, $data);
         $trans_id = $this->paymentRepository->getTransId($gateway, $response);
-
         if($this->transactionRepository->exists('trans_id', $trans_id)){
             $error = 'این تراکنش قبلا ثبت شده است';
-            return Response::error($error, null, 403);
+            return redirect()->away("http://localhost:3000/result?result=failed&error=$error");
         }
 
         $transaction = $this->handleUpdateTransaction($gateway, $transaction->id, $response);
-        
-        $message = 'پرداخت با موفقیت انجام شد';
-        // return Response::success($message, $transaction);
-        return redirect()->away('http://localhost:3000/payment/result?transaction_id=' . $transaction->id);
-        // return redirect()->away('http://localhost:3000/')->with($message);
+
+        PaymentSuccessful::dispatch($transaction);
+        return redirect()->away("http://localhost:3000/result?result=successful");
     }
 
 
@@ -88,15 +100,11 @@ class PurchaseController extends Controller
     }
 
 
-
     protected function createTransactionInPaymentGateway($gateway, $transaction)
     {
         $data = $this->paymentRepository->prepareCreateTransactionData($gateway, $transaction);
         return $this->paymentRepository->createTransaction($gateway, $data);
     }
-
-
-    
 
 
     protected function identifyGatewayByParams(Request $request)
@@ -110,24 +118,43 @@ class PurchaseController extends Controller
     }
 
 
-    
-
-
-    protected function handleCreateTransaction($gateway, $order)
+    protected function handleCreateTransaction($gateway, $order, $request)
     {
+        $shipping_cost = 36000;
         $data=[
             'order_id' => $order->id,
-            'amount' => $order->total_amount,
+            'amount' => $order->total_amount - $order->discount_amount + $shipping_cost,
             'status' => 'pending',
             'gateway' => $gateway,
         ];
+
         return $this->transactionRepository->createTransaction($data);
     }
 
 
+    protected function handleApplyCoupon($request, $order){
+        $data = [
+            'code' => $request->discount_code,
+            'total_amount' => $order->total_amount
+        ];
+
+        $coupon = $this->couponRepository->verifyCoupon($data);
+        $discount_amount = $this->couponRepository->calculationDiscountAmount($data);
+
+        $order = $this->orderRepository->updateOrder($order->id, 
+            [
+                'coupon_id' => $coupon->id,
+                'discount_amount' => $discount_amount,
+            ]
+        );
+
+        return $order;
+    }
+
+
+
     protected function handleCreateOrder($data)
     {
-        // return response()->json($data);
         $order = $this->orderRepository->createOrder();
         $book_ids = array_column($data['items'], 'book_id');
         $books = $this->getbooksbyIds($book_ids);
@@ -152,6 +179,7 @@ class PurchaseController extends Controller
             'total_amount' => $total_amount,
             'total_items' => $total_items,
         ]);
+
         return $order;
     }
 

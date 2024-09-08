@@ -66,6 +66,30 @@ class IDPayGateway implements IPaymentGatewayRepository
         return $data['id'];
     }
 
+    public function getStatus($data){
+        // if( isset($data['status']) == 100 ){
+        //     return true;
+        // } else {
+        //     return false;
+        // }
+
+        // if(isset($data['status'])){
+        //     switch ($data['status']) {
+        //         case '1':
+        //             return [
+        //                 'status' => false,
+        //                 'message' => false,
+        //             ];
+        //             break;
+                
+        //         default:
+        //             # code...
+        //             break;
+        //     }
+        // }
+        return $data['status'] == 10 ? true : false ;
+    }
+
     public function prepareVerifyProcessingData($data){
         return [ //idpay
                 "order_id"=> $data['order_id'],

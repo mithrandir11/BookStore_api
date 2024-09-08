@@ -56,6 +56,12 @@ class PaymentRepository
         return $paymentGateway->getUuId($data);
     }
 
+    public function getStatus($gateway, $data)
+    {
+        $paymentGateway = $this->factory->make($gateway, $gateway);
+        return $paymentGateway->getStatus($data);
+    }
+
     public function prepareVerifyProcessingData($gateway, $data)
     {
         $paymentGateway = $this->factory->make($gateway, $gateway);

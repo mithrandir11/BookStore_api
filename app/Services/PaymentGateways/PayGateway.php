@@ -65,6 +65,15 @@ class PayGateway implements IPaymentGatewayRepository
         return $data['token'];
     }
 
+    public function getStatus($data){
+        // if( $data['status'] == 1 ){
+        //     return true;
+        // } else {
+        //     return false;
+        // }
+        return $data['status'] == 1 ? true : false ;
+    }
+
     public function prepareVerifyProcessingData($data){
         return [ //pay
                 "api"=> "test",

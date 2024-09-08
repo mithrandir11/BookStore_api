@@ -11,6 +11,7 @@ interface IPaymentGatewayRepository
     public function prepareCreateTransactionData($data);
     public function prepareUpdateTransactionData($data);
     public function getUuId($data);
+    public function getStatus($data);
     public function prepareVerifyProcessingData($data);
     
 }

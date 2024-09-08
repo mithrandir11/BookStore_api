@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\PaymentSuccessful;
+use App\Listeners\UpdateDiscountUsage;
 use App\Services\Factory\PaymentGatewayFactory;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class PaymentServiceProvider extends ServiceProvider
@@ -22,6 +25,9 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Event::listen(
+        //     PaymentSuccessful::class,
+        //     UpdateDiscountUsage::class
+        // );
     }
 }
