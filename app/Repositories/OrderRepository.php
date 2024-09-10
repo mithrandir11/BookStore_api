@@ -19,13 +19,8 @@ class OrderRepository implements IOrderRepository
         return $this->model::findOrFail($id);
     }
 
-    public function createOrder(){
-        return $this->model->create([
-            // "user_id" => auth()->id,
-            "user_id" => 1,
-            "total_amount" => 0,
-            "total_items" => 0,
-        ]);
+    public function createOrder($data){
+        return $this->model->create($data);
     }
 
     public function updateOrder($id, $data){

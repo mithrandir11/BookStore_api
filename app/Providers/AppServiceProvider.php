@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Repositories\AddressRepository;
 use App\Repositories\BookRepository;
 use App\Repositories\CategoryRepository;
+use App\Repositories\CommentRepository;
 use App\Repositories\CouponRepository;
+use App\Repositories\Interfaces\IAddressRepository;
 use App\Repositories\Interfaces\IBookRepository;
 use App\Repositories\Interfaces\ICategoryRepository;
+use App\Repositories\Interfaces\ICommentRepository;
 use App\Repositories\Interfaces\ICouponRepository;
 use App\Repositories\Interfaces\IOrderItemRepository;
 use App\Repositories\Interfaces\IOrderRepository;
@@ -34,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ITransactionRepository::class, TransactionRepository::class);
         $this->app->bind(ICouponRepository::class, CouponRepository::class);
         $this->app->bind(IUserRepository::class, UserRepository::class);
+        $this->app->bind(IAddressRepository::class, AddressRepository::class);
+        $this->app->bind(ICommentRepository::class, CommentRepository::class);
         // $this->app->bind(IPaymentGatewayRepository::class, IdpayPaymentGatewayRepository::class);
     }
 

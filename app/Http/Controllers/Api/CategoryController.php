@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Repositories\Interfaces\ICategoryRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
@@ -17,7 +18,7 @@ class CategoryController extends Controller
 
     public function index(){
         $categories= $this->categoryRepository->getAllCategories();
-        return  CategoryResource::collection($categories);
+        return Response::success(null, CategoryResource::collection($categories));
     }
 
     public function findById($id)

@@ -11,36 +11,6 @@ class Book extends Model
 {
     use HasFactory;
 
-    
-
-    // public static function bestsellers($limit = 10)
-    // {
-    //     return Cache::remember("bestsellers_{$limit}", 60, function() use ($limit) {
-    //         return self::select('books.*', DB::raw('SUM(orders.quantity) as total_sales'))
-    //             ->join('orders', 'books.id', '=', 'orders.book_id')
-    //             ->groupBy('books.id')
-    //             ->orderBy('total_sales', 'desc')
-    //             ->take($limit)
-    //             ->get();
-    //     });
-    // }
-
-    // public static function bestsellers($limit = 10)
-    // {
-    //     return Cache::remember("bestsellers_{$limit}", 60, function() use ($limit) {
-    //         return self::select('books.id', 'books.title', 'books.price', 'books.image', DB::raw('SUM(orders.quantity) as total_sales'))
-    //             ->join('orders', 'books.id', '=', 'orders.book_id')
-    //             ->groupBy('books.id', 'books.title', 'books.price', 'books.image')
-    //             ->orderBy('total_sales', 'desc')
-    //             ->take($limit)
-    //             ->get();
-    //     });
-    // }
-
-
-
-
-
     public function author(){
         return $this->belongsTo(Author::class);
     }
@@ -57,27 +27,9 @@ class Book extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 
-
-    
-    // public static function bestsellers($limit = 10)
-    // {
-    //     return self::with(['author', 'publisher', 'translator'])
-    //         ->select('books.*', DB::raw('SUM(orders.quantity) as total_sales'))
-    //         ->join('orders', 'books.id', '=', 'orders.book_id')
-    //         ->groupBy('books.id')
-    //         ->orderBy('total_sales', 'desc')
-    //         ->take($limit)
-    //         ->get();
-    // }
-
-    // public static function bestsellers($limit = 10)
-    // {
-    //     return self::select('books.*', DB::raw('SUM(orders.quantity) as total_sales'))
-    //         ->join('orders', 'books.id', '=', 'orders.book_id')
-    //         ->groupBy('books.id')
-    //         ->orderBy('total_sales', 'desc')
-    //         ->take($limit)
-    //         ->get();
-    // }
 }

@@ -8,6 +8,7 @@ use App\Models\Book;
 use App\Repositories\Criteria\EagerLoad;
 use App\Repositories\Interfaces\IBookRepository;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class BookController extends Controller
 {
@@ -21,13 +22,15 @@ class BookController extends Controller
     public function index()
     {
         $books = $this->bookRepository->getAllBooks(10);
-        return  BookResource::collection($books);
+        return Response::success(null, BookResource::collection($books));
+        // return  BookResource::collection($books);
     }
 
     public function findById($id)
     {
         $books = $this->bookRepository->getBookById($id);
-        return new BookResource($books);
+        return Response::success(null, new BookResource($books));
+        // return new BookResource($books);
     }
 
     public function findByIds(Request $request)
@@ -46,12 +49,21 @@ class BookController extends Controller
 
     public function bestSellers(){
         $books = $this->bookRepository->getBestSellersBooks(10);
-        return BookResource::collection($books);
+        return Response::success(null, BookResource::collection($books));
     }
 
     public function latest(){
         $books = $this->bookRepository->getLatestBooks(10);
-        return BookResource::collection($books);
+        return Response::success(null, BookResource::collection($books));
     }
+
+    // public function createComment(Request $request){
+    //     $validated = $request->validate([
+    //         'body' => ['required','string'],
+    //     ]);
+    //     $validated['user_id'] = $request->user()->id;
+    //     $comment = $this->bookRepository->createComment($validated);
+    //     return Response::success(null, $comment);
+    // }
 
 }

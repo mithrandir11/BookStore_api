@@ -34,6 +34,7 @@ class BookResource extends JsonResource
              $data['author'] = $this->author;
             $data['publisher'] = $this->publisher;
             $data['category'] = $this->category;
+            $data['comments'] =  CommentResource::collection($this->comments);
         }
 
         if ($request->query('include_category', false)) {

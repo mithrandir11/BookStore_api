@@ -67,6 +67,10 @@ class BookRepository implements IBookRepository
         });
     }
 
+    // public function createComment($data){
+    //     return $this->model->create($data);
+    // }
+
 
 
     public function withCriteria(array $criteria)

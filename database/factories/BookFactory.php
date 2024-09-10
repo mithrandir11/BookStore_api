@@ -31,7 +31,7 @@ class BookFactory extends Factory
             'quantity' => fake()->numberBetween(1, 10),
             'image' => url('images/covers/' . Arr::random($imageNames)),
             // 'image' => fake()->imageUrl(200, 300, 'books', true),
-            'description' => fake()->sentence(12),
+            'description' => fake()->sentence(100),
             'author_id' => Author::factory(),
             'publisher_id' => Publisher::factory(),
             'translator_id' => Translator::factory(),

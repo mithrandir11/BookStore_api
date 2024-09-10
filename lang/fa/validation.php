@@ -12,7 +12,6 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-
     "accepted"         => ":attribute باید پذیرفته شده باشد.",
     'accepted_if'      => 'هنگامی که :other، :value است باید با :attribute توافق کنید.',
     "active_url"       => "آدرس :attribute معتبر نیست",
@@ -126,7 +125,6 @@ return [
     'uploaded'         => 'فیلد :attribute به درستی اپلود نشد.',
     "url"              => "فرمت آدرس :attribute اشتباه است.",
     'uuid'             => ':attribute باید یک فرمت درست UUID باشد.',
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -138,7 +136,9 @@ return [
     |
     */
 
-    'custom' => [],
+    'custom' => [
+        
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -187,6 +187,6 @@ return [
 		"cellphone" => "شماره موبایل",
 		"g-recaptcha-response" => "کپچا",
         'images' => 'تصاویر',
-        'expiration_date' =>  'تاریخ پایان'
+        'expiration_date' =>  'تاریخ پایان',
     ],
 ];

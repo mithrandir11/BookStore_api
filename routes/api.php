@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
@@ -22,6 +24,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 
 Route::get('/currentUser', [UserController::class, 'getCurrentUser'])->middleware('auth:sanctum');
+// Route::get('/currentUser/addresses', [UserController::class, 'getAddresses'])->middleware('auth:sanctum');
+
+
+Route::get('/addresses/userAddresses', [AddressController::class, 'getUserAddresses'])->middleware('auth:sanctum');
+Route::post('/addresses/create', [AddressController::class, 'createAddress'])->middleware('auth:sanctum');
+
+Route::get('/{commentableType}/{commentableId}/comments', [CommentController::class, 'index']);
+Route::post('/{commentableType}/{commentableId}/comments/create', [CommentController::class, 'createComment'])->middleware('auth:sanctum');
+
+
 
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/findById/{id}', [BookController::class, 'findById']);
@@ -29,6 +41,7 @@ Route::get('/books/findByIds', [BookController::class, 'findByIds']);
 Route::get('/books/findByCategoryId/{id}', [BookController::class, 'findByCategoryId']);
 Route::get('/books/bestSellers', [BookController::class, 'bestSellers']);
 Route::get('/books/latest', [BookController::class, 'latest']);
+
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/findById/{id}', [CategoryController::class, 'findById']);
@@ -39,5 +52,5 @@ Route::post('/orderItem/create', [OrderItemController::class, 'createOrderItem']
 
 Route::get('/coupons/findByCode/{code}', [CouponController::class, 'findByCode']);
 
-Route::post('purchaseProcessing', [PurchaseController::class, 'handlePurchaseProcessing']);
+Route::post('purchaseProcessing', [PurchaseController::class, 'handlePurchaseProcessing'])->middleware('auth:sanctum');
 Route::match(['get', 'post'], 'verifyProcessing', [PurchaseController::class, 'handleVerifyProcessing'])->name('handleVerifyProcessing');

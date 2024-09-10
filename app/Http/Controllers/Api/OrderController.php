@@ -14,8 +14,8 @@ class OrderController extends Controller
         $this->orderRepository = $orderRepository;
     }
 
-    public function createOrder(){
-        $order = $this->orderRepository->createOrder();
-        return response()->json($order);
-    }
+    // public function createOrder(){
+    //     $order = $this->orderRepository->createOrder();
+    //     return response()->json($order);
+    // }
 }

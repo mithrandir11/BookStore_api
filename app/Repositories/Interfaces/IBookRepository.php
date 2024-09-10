@@ -10,4 +10,5 @@ interface IBookRepository
     public function getBookByCategoryId($id);
     public function getBestSellersBooks($limit);
     public function getLatestBooks($limit);
+    // public function createComment($data);
 }

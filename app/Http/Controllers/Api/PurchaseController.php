@@ -43,8 +43,9 @@ class PurchaseController extends Controller
 
     public function handlePurchaseProcessing(Request $request)
     {
+        // dd($request->all());
         try {
-            $order = $this->handleCreateOrder($request->all());
+            $order = $this->handleCreateOrder($request);
             if(isset($request->discount_code)) $order = $this->handleApplyCoupon($request, $order);
             $transaction = $this->handleCreateTransaction($request->gateway, $order, $request);
             $response = $this->createTransactionInPaymentGateway($request->gateway, $transaction);
@@ -155,7 +156,14 @@ class PurchaseController extends Controller
 
     protected function handleCreateOrder($data)
     {
-        $order = $this->orderRepository->createOrder();
+        // dd($data['items']);
+        $order = $this->orderRepository->createOrder([
+            "user_id" => $data->user()->id,
+            "total_amount" => 0,
+            "total_items" => 0,
+            "address_id" => $data['address_id'],
+        ]);
+
         $book_ids = array_column($data['items'], 'book_id');
         $books = $this->getbooksbyIds($book_ids);
         $total_amount = 0;

@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
     /**
      * The attributes that are mass assignable.
      *

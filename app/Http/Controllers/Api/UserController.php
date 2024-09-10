@@ -13,4 +13,10 @@ class UserController extends Controller
         $user = Auth::user();
         if($user) return Response::success(null, ['user'=>$user]);
     }
+
+    // public function getAddresses(){
+    //     $user = Auth::user();
+    //     // dd($user->addresses);
+    //     if($user) return Response::success(null, $user->addresses->sortDesc());
+    // }
 }
