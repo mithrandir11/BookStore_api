@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('body');
-            $table->morphs('commentable'); // این بخش پلی‌مورفیک را ایجاد می‌کند
+            $table->morphs('commentable'); 
             $table->timestamps();
         });
     }

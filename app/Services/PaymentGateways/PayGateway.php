@@ -66,11 +66,6 @@ class PayGateway implements IPaymentGatewayRepository
     }
 
     public function getStatus($data){
-        // if( $data['status'] == 1 ){
-        //     return true;
-        // } else {
-        //     return false;
-        // }
         return $data['status'] == 1 ? true : false ;
     }
 

@@ -22,20 +22,22 @@ class BookFactory extends Factory
      */
     public function definition(): array
     {
-        $imageNames = ['cover1.jpg', 'cover2.jpg', 'cover3.jpg', 'cover4.jpg'];
+        $imageNames = [
+            'cover1.jpg', 'cover2.jpg', 'cover3.jpg', 'cover4.jpg',
+            'cover5.jpg', 'cover6.jpg', 'cover7.jpg', 'cover8.jpg',
+            'cover9.jpg', 'cover10.jpg', 'cover11.jpg', 'cover12.jpg',
+        ];
         $title = fake()->sentence(3);
         return [
             'title' => $title,
             'slug' => Str::slug($title),
             'price' => $this->generatePrice(),
             'quantity' => fake()->numberBetween(1, 10),
-            'image' => url('images/covers/' . Arr::random($imageNames)),
-            // 'image' => fake()->imageUrl(200, 300, 'books', true),
+            'image' => url(env('APP_URL').'images/covers/' . Arr::random($imageNames)),
             'description' => fake()->sentence(100),
-            'author_id' => Author::factory(),
-            'publisher_id' => Publisher::factory(),
+            'author_id' => Author::inRandomOrder()->first()->id,
+            'publisher_id' => Publisher::inRandomOrder()->first()->id,
             'translator_id' => Translator::factory(),
-            // 'category_id' => Category::factory(),
             'category_id' => Category::inRandomOrder()->first()->id,
             'pages' => fake()->numberBetween(100, 1000),
             'published_year' => fake()->year(),

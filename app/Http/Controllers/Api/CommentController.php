@@ -32,7 +32,7 @@ class CommentController extends Controller
         $validated['user_id'] = $request->user()->id;
         $commentable = $this->findCommentable($commentableType, $commentableId);
         $comment = $this->commentRepository->create($validated, $commentable);
-        return Response::success(null, $comment);
+        return Response::success('نظر شما با موفقیت ذخیره شد و پس از تایید منتشر میشود.', $comment);
     }
 
     protected function findCommentable($type, $id)

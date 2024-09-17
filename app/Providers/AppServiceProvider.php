@@ -3,21 +3,25 @@
 namespace App\Providers;
 
 use App\Repositories\AddressRepository;
+use App\Repositories\AuthorRepository;
 use App\Repositories\BookRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CommentRepository;
 use App\Repositories\CouponRepository;
 use App\Repositories\Interfaces\IAddressRepository;
+use App\Repositories\Interfaces\IAuthorRepository;
 use App\Repositories\Interfaces\IBookRepository;
 use App\Repositories\Interfaces\ICategoryRepository;
 use App\Repositories\Interfaces\ICommentRepository;
 use App\Repositories\Interfaces\ICouponRepository;
 use App\Repositories\Interfaces\IOrderItemRepository;
 use App\Repositories\Interfaces\IOrderRepository;
+use App\Repositories\Interfaces\IPublisherRepository;
 use App\Repositories\Interfaces\ITransactionRepository;
 use App\Repositories\Interfaces\IUserRepository;
 use App\Repositories\OrderItemRepository;
 use App\Repositories\OrderRepository;
+use App\Repositories\PublisherRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Response;
@@ -40,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IUserRepository::class, UserRepository::class);
         $this->app->bind(IAddressRepository::class, AddressRepository::class);
         $this->app->bind(ICommentRepository::class, CommentRepository::class);
+        $this->app->bind(IPublisherRepository::class, PublisherRepository::class);
+        $this->app->bind(IAuthorRepository::class, AuthorRepository::class);
         // $this->app->bind(IPaymentGatewayRepository::class, IdpayPaymentGatewayRepository::class);
     }
 
@@ -52,11 +58,12 @@ class AppServiceProvider extends ServiceProvider
             return preg_replace('/\s+/u', $separator, trim($string));
         });
 
-        Response::macro('success', function($message, $data) {
+        Response::macro('success', function($message, $data, $pagination = null) {
             return response()->json([
                 'status' => 1,
                 'message' => $message,
                 'data' => $data,
+                'pagination' => $pagination
             ]);
         });
 

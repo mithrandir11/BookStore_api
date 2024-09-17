@@ -49,8 +49,7 @@ class AuthController extends Controller
     }
 
     public function logout(Request $request){
-        // $request->user()->currentAccessToken()->delete();
-        auth()->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
         return Response::success('خروج موفقیت‌آمیز بود', null,200);  
     }
 }

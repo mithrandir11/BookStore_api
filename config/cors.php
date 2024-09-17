@@ -20,10 +20,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => ['*'],
-    // 'allowed_origins' => ['http://localhost:3000'],
+    // 'allowed_origins' => [env('FRONT_URL'),'localhost:3000','localhost'],
 
     'allowed_origins_patterns' => [],
-    // 'allowed_origins_patterns' => ['http://localhost:3000'],
 
     'allowed_headers' => ['*'],
 

@@ -43,7 +43,6 @@ class PurchaseController extends Controller
 
     public function handlePurchaseProcessing(Request $request)
     {
-        // dd($request->all());
         try {
             $order = $this->handleCreateOrder($request);
             if(isset($request->discount_code)) $order = $this->handleApplyCoupon($request, $order);
@@ -64,14 +63,14 @@ class PurchaseController extends Controller
         $is_successful = $this->paymentRepository->getStatus($gateway, $request);
         if(!$is_successful){
             $error = 'پرداخت ناموفق بود';
-            return redirect()->away("http://localhost:3000/result?result=failed&error=$error");
+            return redirect()->away(env('FRONT_URL')."result?result=failed&error=".$error);
         }
 
         $uu_id = $this->paymentRepository->getUuId($gateway, $request);
         $transaction = $this->transactionRepository->findWhereFirst('uu_id', $uu_id);
         if(!$transaction){
             $error = 'تراکنش یافت نشد';
-            return redirect()->away("http://localhost:3000/result?result=failed&error=$error");
+            return redirect()->away(env('FRONT_URL')."result?result=failed&error=".$error);
         }
         
         $data = $this->paymentRepository->prepareVerifyProcessingData($gateway, $request);
@@ -79,13 +78,13 @@ class PurchaseController extends Controller
         $trans_id = $this->paymentRepository->getTransId($gateway, $response);
         if($this->transactionRepository->exists('trans_id', $trans_id)){
             $error = 'این تراکنش قبلا ثبت شده است';
-            return redirect()->away("http://localhost:3000/result?result=failed&error=$error");
+            return redirect()->away(env('FRONT_URL')."result?result=failed&error=".$error);
         }
 
         $transaction = $this->handleUpdateTransaction($gateway, $transaction->id, $response);
 
         PaymentSuccessful::dispatch($transaction);
-        return redirect()->away("http://localhost:3000/result?result=successful");
+        return redirect()->away(env('FRONT_URL')."result?result=successful");
     }
 
 
@@ -156,7 +155,6 @@ class PurchaseController extends Controller
 
     protected function handleCreateOrder($data)
     {
-        // dd($data['items']);
         $order = $this->orderRepository->createOrder([
             "user_id" => $data->user()->id,
             "total_amount" => 0,

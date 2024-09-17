@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // کاربر
-            $table->unsignedBigInteger('total_amount');  // مبلغ کل سفارش
-            $table->integer('total_items'); // تعداد کل آیتم‌ها در سفارش
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            $table->unsignedBigInteger('total_amount');  
+            $table->integer('total_items'); 
             $table->foreignId('address_id')->nullable()->constrained('addresses')->onDelete('set null');
             $table->foreignId('coupon_id')->nullable()->constrained('coupons')->onDelete('set null');
             $table->unsignedBigInteger('discount_amount')->nullable();
-            $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending'); // وضعیت سفارش
-            // $table->timestamp('ordered_at'); // زمان ثبت سفارش
-            $table->timestamps(); // زمان ایجاد و به‌روزرسانی سفارش
+            $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending'); 
+            $table->timestamps(); 
         });
     }
 

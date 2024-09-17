@@ -48,9 +48,7 @@ class IDPayGateway implements IPaymentGatewayRepository
     public function prepareUpdateTransactionData($data){
         if(isset($data['id']) && isset($data['link'])){
             return [
-                // "uu_id" => '00ba39d5d8cc40ce30ca3234527e1a50'
                 "uu_id" => $data['id']
-                
             ];
         }
 
@@ -67,26 +65,6 @@ class IDPayGateway implements IPaymentGatewayRepository
     }
 
     public function getStatus($data){
-        // if( isset($data['status']) == 100 ){
-        //     return true;
-        // } else {
-        //     return false;
-        // }
-
-        // if(isset($data['status'])){
-        //     switch ($data['status']) {
-        //         case '1':
-        //             return [
-        //                 'status' => false,
-        //                 'message' => false,
-        //             ];
-        //             break;
-                
-        //         default:
-        //             # code...
-        //             break;
-        //     }
-        // }
         return $data['status'] == 10 ? true : false ;
     }
 

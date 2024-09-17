@@ -16,10 +16,6 @@ class CouponRepository implements ICouponRepository
         $this->model = $model;
     }
 
-    // public function createCoupon($data){
-    //     return $this->model->create($data);
-    // }
-
     public function find($id){
         return $this->model->findOrFail($id);
     }
@@ -29,8 +25,6 @@ class CouponRepository implements ICouponRepository
     }
 
     public function verifyCoupon($data){
-        // dd($data);
-
         $coupon = $this->findByCode($data['code']);
         if (!$coupon) {
             throw new Exception('کد تفیف یافت نشد');

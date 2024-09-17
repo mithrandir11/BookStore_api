@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class BookRepository implements IBookRepository
 {
-
-    // public function getAllBooks(){
-    //     return Book::with(['author', 'publisher', 'translator', 'category'])->get();
-    // }
-
     protected $model;
 
     public function __construct(Book $model)
@@ -23,53 +18,54 @@ class BookRepository implements IBookRepository
 
     public function getAllBooks($perPage = 10)
     {
-        return Cache::remember('books_page_' . request('page', 1), 60, function() use ($perPage) {
-            // return  $this->model->paginate($perPage);
-            return  $this->model->get();
-        });
-    }
-
-    public function getBookById($id){
-        // return Cache::remember("book_id_{$id}", 60, function() use ($id) {
-            return  $this->model->findOrFail($id);
+        // return Cache::remember('books_page_' . request('page', 1), 120, function() use ($perPage) {
+            return  $this->model->paginate($perPage);
         // });
     }
 
+    public function getBookById($id){
+        return  $this->model->findOrFail($id);
+    }
+
     public function getBooksByIds($data){
-            return  Book::whereIn('id', $data)->get();
+        return $this->model->whereIn('id', $data)->get();
     }
 
     public function getBookByCategoryId($id, $perPage = 10){
-        // return  $this->model->where('category_id', $id)->paginate($perPage);
-        return  $this->model->where('category_id', $id)->get();
+        return  $this->model->where('category_id', $id)->paginate($perPage);
     }
 
     public function getBestSellersBooks($limit = 10)
     {
-        $query = $this->model;
-
-        return Cache::remember("bestsellers_{$limit}", 60, function() use ($query, $limit) {
-            return $query
-                ->select('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at', DB::raw('SUM(order_items.quantity) as total_sales'))
-                ->join('order_items', 'books.id', '=', 'order_items.book_id')
-                ->groupBy('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at')
-                ->orderBy('total_sales', 'desc')
-                ->take($limit)
-                ->get();
-        });
+        return $this->model->sort('best_seller')->take($limit)->get();
     }
 
 
     public function getLatestBooks($limit = 10)
     {
-        return Cache::remember("latest_books_{$limit}", 60, function() use ($limit) {
+        // return Cache::remember("latest_books_{$limit}", 120, function() use ($limit) {
             return  $this->model->latest()->take($limit)->get();
-        });
+        // });
     }
 
-    // public function createComment($data){
-    //     return $this->model->create($data);
-    // }
+
+    public function search(string $query)
+    {
+        return $this->model->where('title', 'like', "%$query%")
+            ->orWhereHas('author', function ($q) use ($query) {
+                $q->where('name', 'like', "%$query%");
+            })
+            ->orWhereHas('translator', function ($q) use ($query) {
+                $q->where('name', 'like', "%$query%");
+            })
+            ->get();
+    }
+
+    
+    public function getBooksSortBy($sort_by, $perPage = 10)
+    {
+        return $this->model->sort($sort_by)->paginate($perPage);
+    }
 
 
 

@@ -14,7 +14,7 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = ['روانشناسی', 'فلسفه و عرفان', 'داستانی', 'تاریخی', 'سیاسی'];
+        $categories = ['روانشناسی', 'فلسفه و عرفان', 'داستانی', 'تاریخی', 'سیاسی', 'عمومی', 'کودک و نوجوان'];
 
         foreach ($categories as $category) {
             Category::create([

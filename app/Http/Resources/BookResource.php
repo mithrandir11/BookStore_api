@@ -22,6 +22,7 @@ class BookResource extends JsonResource
             "price" => $this->price,
             "quantity" => $this->quantity,
             "created_at" => $this->created_at,
+            // "aa" => $this->author,
         ];
 
         if ($request->query('include_details', false)) {
@@ -31,14 +32,18 @@ class BookResource extends JsonResource
             $data['isbn'] = $this->isbn;
             $data['pages'] = $this->pages;
             $data['translator'] = $this->translator;
-             $data['author'] = $this->author;
+            $data['author'] = $this->author;
             $data['publisher'] = $this->publisher;
             $data['category'] = $this->category;
-            $data['comments'] =  CommentResource::collection($this->comments);
+            $data['comments'] =  CommentResource::collection($this->comments->sortDesc());
         }
 
         if ($request->query('include_category', false)) {
             $data['category'] = $this->category;
+        }
+
+        if ($request->query('include_author', false)) {
+            $data['author'] = $this->author;
         }
 
         return $data;

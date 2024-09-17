@@ -32,4 +32,48 @@ class Book extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+
+
+    public function scopeSort($query, ?string $sort)
+    {
+        if ($sort == 'latest') {
+            return $query->latest();
+        }
+
+        if ($sort == 'best_seller') {
+            return $query
+            ->select('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at', DB::raw('SUM(most_sold.quantity) as total_sales'))
+            ->rightJoin('order_items as most_sold', 'books.id', '=', 'most_sold.book_id')
+            ->groupBy('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at')
+            ->orderBy('total_sales', 'DESC');
+        }
+
+        if ($sort == 'cheapest') {
+            return $query
+            ->orderBy('price', 'ASC');
+        }
+
+        if ($sort == 'most_expensive') {
+            return $query
+            ->orderBy('price', 'DESC');
+        }
+
+        return $query;
+    }
+
+    public function scopeFilterIn($query, ?array $filters = [])
+    {
+        if (isset($filters['author_id'])) {
+            $query->where('author_id', $filters['author_id']);
+        }
+
+        if (isset($filters['publisher_id'])) {
+            $query->where('publisher_id', $filters['publisher_id']);
+        }
+
+        return $query;
+    }
+
+    
+
 }
