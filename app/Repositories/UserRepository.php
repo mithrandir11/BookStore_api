@@ -16,12 +16,23 @@ class UserRepository implements IUserRepository
         $this->model = $model;
     }
 
+    public function find($id){
+        return $this->model->findOrFail($id);
+    }
+
     public function createUser($data){ 
         return $this->model->create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'cellphone' => $data['cellphone'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function updateUser($id, $data){
+        $item = $this->find($id);
+        $item->update($data);
+        return $item;
     }
 
     public function findWhereFirst($column, $value){

@@ -20,8 +20,11 @@ class AuthController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'cellphone' => ['required','numeric','unique:users,cellphone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
+
+        // dd($request->all());
 
         $user = $this->userRepository->createUser($request->all());
         return Response::success('Registration successful', ['user'=>$user]);           

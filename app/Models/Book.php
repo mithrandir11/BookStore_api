@@ -34,41 +34,57 @@ class Book extends Model
 
 
 
-    public function scopeSort($query, ?string $sort)
+    // public function scopeSort($query, ?string $sort)
+    public function scopeSort($query)
     {
-        if ($sort == 'latest') {
-            return $query->latest();
+        if (request()->has('sort_by')) {
+            $sort = request()->sort_by;
+
+            if ($sort == 'latest') {
+                return $query->latest();
+            }
+    
+            if ($sort == 'best_seller') {
+                return $query
+                ->select('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at', DB::raw('SUM(most_sold.quantity) as total_sales'))
+                ->rightJoin('order_items as most_sold', 'books.id', '=', 'most_sold.book_id')
+                ->groupBy('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at')
+                ->orderBy('total_sales', 'DESC');
+            }
+    
+            if ($sort == 'cheapest') {
+                return $query
+                ->orderBy('price', 'ASC');
+            }
+    
+            if ($sort == 'most_expensive') {
+                return $query
+                ->orderBy('price', 'DESC');
+            }
         }
 
-        if ($sort == 'best_seller') {
-            return $query
-            ->select('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at', DB::raw('SUM(most_sold.quantity) as total_sales'))
-            ->rightJoin('order_items as most_sold', 'books.id', '=', 'most_sold.book_id')
-            ->groupBy('books.id', 'books.title', 'books.slug', 'books.price', 'books.image', 'books.created_at')
-            ->orderBy('total_sales', 'DESC');
-        }
-
-        if ($sort == 'cheapest') {
-            return $query
-            ->orderBy('price', 'ASC');
-        }
-
-        if ($sort == 'most_expensive') {
-            return $query
-            ->orderBy('price', 'DESC');
-        }
+       
 
         return $query;
     }
 
-    public function scopeFilterIn($query, ?array $filters = [])
+    // public function scopeFilterIn($query, ?array $filters = [])
+    public function scopeFilterIn($query)
     {
-        if (isset($filters['author_id'])) {
-            $query->where('author_id', $filters['author_id']);
+        // if (isset($filters['author_id'])) {
+        //     $query->where('author_id', $filters['author_id']);
+        // }
+
+        // if (isset($filters['publisher_id'])) {
+        //     $query->where('publisher_id', $filters['publisher_id']);
+        // }
+
+        if (request()->has('author_id')){
+            $query->where('author_id', request()->author_id);
         }
 
-        if (isset($filters['publisher_id'])) {
-            $query->where('publisher_id', $filters['publisher_id']);
+        if (request()->has('publisher_id')){
+            $query->where('publisher_id', request()->publisher_id);
         }
 
         return $query;

@@ -16,11 +16,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('full_address');
             $table->string('recipient_name');
-            $table->string('phone_number'); 
+            $table->string('cellphone'); 
             $table->string('city');
             $table->string('state')->nullable(); 
             $table->string('postal_code');
             $table->timestamps();
+            
+            $table->softDeletes();
         });
     }
 

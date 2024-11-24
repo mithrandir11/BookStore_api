@@ -7,12 +7,14 @@ use App\Repositories\AuthorRepository;
 use App\Repositories\BookRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CommentRepository;
+use App\Repositories\ContactRepository;
 use App\Repositories\CouponRepository;
 use App\Repositories\Interfaces\IAddressRepository;
 use App\Repositories\Interfaces\IAuthorRepository;
 use App\Repositories\Interfaces\IBookRepository;
 use App\Repositories\Interfaces\ICategoryRepository;
 use App\Repositories\Interfaces\ICommentRepository;
+use App\Repositories\Interfaces\IContactRepository;
 use App\Repositories\Interfaces\ICouponRepository;
 use App\Repositories\Interfaces\IOrderItemRepository;
 use App\Repositories\Interfaces\IOrderRepository;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICommentRepository::class, CommentRepository::class);
         $this->app->bind(IPublisherRepository::class, PublisherRepository::class);
         $this->app->bind(IAuthorRepository::class, AuthorRepository::class);
+        $this->app->bind(IContactRepository::class, ContactRepository::class);
         // $this->app->bind(IPaymentGatewayRepository::class, IdpayPaymentGatewayRepository::class);
     }
 

@@ -13,6 +13,7 @@ use App\Repositories\PaymentRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
 {
@@ -43,16 +44,25 @@ class PurchaseController extends Controller
 
     public function handlePurchaseProcessing(Request $request)
     {
+        DB::beginTransaction();
         try {
             $order = $this->handleCreateOrder($request);
             if(isset($request->discount_code)) $order = $this->handleApplyCoupon($request, $order);
             $transaction = $this->handleCreateTransaction($request->gateway, $order, $request);
             $response = $this->createTransactionInPaymentGateway($request->gateway, $transaction);
             $transaction = $this->handleUpdateTransaction($request->gateway, $transaction->id, $response);
+            DB::commit();
             return $this->createPaymentGatewayLink($request->gateway, $response);
         } catch (Exception $error) {
+            DB::rollBack();
             return Response::error($error->getMessage(), null);
         }
+        
+    }
+
+    protected function handleUpdateOrder($id, $data)
+    {
+        $this->orderRepository->updateOrder($id, $data);
     }
 
 
@@ -82,6 +92,7 @@ class PurchaseController extends Controller
         }
 
         $transaction = $this->handleUpdateTransaction($gateway, $transaction->id, $response);
+        $this->handleUpdateOrder($transaction->order->id, ['status'=>'completed']);
 
         PaymentSuccessful::dispatch($transaction);
         return redirect()->away(env('FRONT_URL')."result?result=successful");

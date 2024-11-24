@@ -15,8 +15,18 @@ class AddressRepository implements IAddressRepository
         $this->model = $model;
     }
 
+    public function find($id){
+        return $this->model::findOrFail($id);
+    }
+
     public function create($data){
         return $this->model->create($data);
+    }
+
+    public function updateAddress($id, $data){
+        $address = $this->find($id);
+        $address->update($data);
+        return $address;
     }
 
     public function getUserAddresses($user_id){

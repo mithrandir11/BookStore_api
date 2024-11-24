@@ -15,11 +15,18 @@ class AddressController extends Controller
         $this->addressRepository = $addressRepository;
     }
 
+    
+
+    public function getUserAddresses(Request $request){
+        $address = $this->addressRepository->getUserAddresses($request->user()->id);
+        return Response::success(null, $address);
+    }
+
     public function createAddress(Request $request){
         $validated = $request->validate([
             'full_address' => ['required','string'],
             'recipient_name' => ['required','string'],
-            'phone_number' => ['required','string'],
+            'cellphone' => ['required','string'],
             'city' => ['required','string'],
             'state' => ['required','string'],
             'postal_code' => ['required'],
@@ -29,8 +36,24 @@ class AddressController extends Controller
         return Response::success(null, $address);
     }
 
-    public function getUserAddresses(Request $request){
-        $address = $this->addressRepository->getUserAddresses($request->user()->id);
+    public function editAddress(Request $request, $id){
+        $validated = $request->validate([
+            // 'address_id' => 'required|integer|exists:addresses,id',
+            'full_address' => ['required','string'],
+            'recipient_name' => ['required','string'],
+            'cellphone' => ['required','string'],
+            'city' => ['required','string'],
+            'state' => ['required','string'],
+            'postal_code' => ['required'],
+        ]);
+        $address = $this->addressRepository->updateAddress($id, $validated);
         return Response::success(null, $address);
+    }
+
+
+    public function deleteAddress($id){
+        $address = $this->addressRepository->find($id);
+        $address->delete($id);
+        return Response::success('آیتم با موفقیت حذف شد', null);
     }
 }

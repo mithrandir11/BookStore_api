@@ -21,25 +21,30 @@ class BookController extends Controller
         $this->bookRepository = $bookRepository;
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $filters = [
-            'author_id' => $request->input('author_id'),
-            'publisher_id' => $request->input('publisher_id'),
-        ];
-        $sort_by = $request->query('sort_by', 'latest');
+        // $filters = [
+        //     'author_id' => $request->input('author_id'),
+        //     'publisher_id' => $request->input('publisher_id'),
+        // ];
+        // $sort_by = $request->query('sort_by', 'latest');
 
         $books = $this->bookRepository->withCriteria([
-            new Sort($sort_by),
-            new Filter($filters),
+            new Sort(),
+            new Filter(),
         ])->getAllBooks(20);
 
+        // $books = Book::sort($request)->get();
+
+        // dd($books);
         $pagination = [
             'currentPage' => $books->currentPage(),
             'lastPage' => $books->lastPage(),
             'total' => $books->total(),
             'perPage' => $books->perPage(),
+            // 'links' => $books->collection()->response()->getData()->links,
         ];
+
         return Response::success(null, BookResource::collection($books), $pagination);
     }
 
@@ -57,17 +62,22 @@ class BookController extends Controller
         return  BookResource::collection($books);
     }
 
-    public function findByCategoryId(Request $request, $id)
+    public function findByCategoryId($id)
     {
-        $filters = [
-            'author_id' => $request->input('author_id'),
-            'publisher_id' => $request->input('publisher_id'),
-        ];
-        $sort_by = $request->query('sort_by', 'latest');
+        // $filters = [
+        //     'author_id' => $request->input('author_id'),
+        //     'publisher_id' => $request->input('publisher_id'),
+        // ];
+        // $sort_by = $request->query('sort_by', 'latest');
+
+        // $books = $this->bookRepository->withCriteria([
+        //     new Sort($sort_by),
+        //     new Filter($filters),
+        // ])->getBookByCategoryId($id);
 
         $books = $this->bookRepository->withCriteria([
-            new Sort($sort_by),
-            new Filter($filters),
+            new Sort(),
+            new Filter(),
         ])->getBookByCategoryId($id);
 
         $pagination = [

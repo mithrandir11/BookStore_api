@@ -28,4 +28,8 @@ class OrderRepository implements IOrderRepository
         return $order;
     }
 
+    public function getUserOrders($user_id){
+        return  $this->model->where('user_id', $user_id)->latest()->paginate(10);
+    }
+
 }
