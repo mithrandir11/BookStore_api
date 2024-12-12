@@ -37,7 +37,8 @@ class BookRepository implements IBookRepository
 
     public function getBestSellersBooks($limit = 10)
     {
-        return $this->model->sort('best_seller')->take($limit)->get();
+        return  $this->model->take($limit)->get();
+        // return $this->model->sort('best_seller')->take($limit)->get();
     }
 
 

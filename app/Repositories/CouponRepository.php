@@ -4,16 +4,18 @@ namespace App\Repositories;
 
 use App\Models\Coupon;
 use App\Repositories\Interfaces\ICouponRepository;
+use App\Repositories\Interfaces\IOrderRepository;
 use Exception;
 
 class CouponRepository implements ICouponRepository
 {
 
     protected $model;
-
-    public function __construct(Coupon $model)
+    protected $orderRepository;
+    public function __construct(Coupon $model, IOrderRepository $orderRepository)
     {
         $this->model = $model;
+        $this->orderRepository = $orderRepository;
     }
 
     public function find($id){
@@ -27,7 +29,7 @@ class CouponRepository implements ICouponRepository
     public function verifyCoupon($data){
         $coupon = $this->findByCode($data['code']);
         if (!$coupon) {
-            throw new Exception('کد تفیف یافت نشد');
+            throw new Exception('کد تخفیف یافت نشد');
         }
 
         if ($coupon->expires_at && $coupon->expires_at < now()) {
@@ -40,6 +42,10 @@ class CouponRepository implements ICouponRepository
     
         if ($coupon->min_order_amount && $data['total_amount'] < $coupon->min_order_amount) {
             throw new Exception('برای استفاده از این کد تخفیف، مبلغ سفارش باید بیشتر از ' . $coupon->min_order_amount . ' باشد.');
+        }
+
+        if ($this->orderRepository->userHasUsedCoupon($data['user_id'], $coupon->id)) {
+            throw new Exception('شما قبلاً از این کد تخفیف استفاده کرده‌اید.');
         }
 
         return $coupon;

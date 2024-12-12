@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Morilog\Jalali\Jalalian;
 
 class OrderResource extends JsonResource
 {
@@ -23,7 +24,8 @@ class OrderResource extends JsonResource
             // "coupon_id" => $this->coupon_id,
             "discount_amount" => $this->discount_amount,
             "status" => $this->status,
-            "created_at" => $this->created_at,
+            // "created_at" => $this->created_at,
+            'created_at' => Jalalian::fromDateTime($this->created_at)->format('Y/m/d  --  H:i'),
             "updated_at" => $this->updated_at,
         ];
     }

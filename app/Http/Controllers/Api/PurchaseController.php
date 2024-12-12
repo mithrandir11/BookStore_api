@@ -44,6 +44,9 @@ class PurchaseController extends Controller
 
     public function handlePurchaseProcessing(Request $request)
     {
+        // dd($request->all());
+        // return response()->json($request->all());
+        
         DB::beginTransaction();
         try {
             $order = $this->handleCreateOrder($request);
@@ -52,7 +55,10 @@ class PurchaseController extends Controller
             $response = $this->createTransactionInPaymentGateway($request->gateway, $transaction);
             $transaction = $this->handleUpdateTransaction($request->gateway, $transaction->id, $response);
             DB::commit();
-            return $this->createPaymentGatewayLink($request->gateway, $response);
+
+
+            return Response::success(null, ['url'=>$this->createPaymentGatewayLink($request->gateway, $response)]);
+            // return $this->createPaymentGatewayLink($request->gateway, $response);
         } catch (Exception $error) {
             DB::rollBack();
             return Response::error($error->getMessage(), null);
@@ -60,10 +66,10 @@ class PurchaseController extends Controller
         
     }
 
-    protected function handleUpdateOrder($id, $data)
-    {
-        $this->orderRepository->updateOrder($id, $data);
-    }
+    // protected function handleUpdateOrder($id, $data)
+    // {
+    //     $this->orderRepository->updateOrder($id, $data);
+    // }
 
 
     public function handleVerifyProcessing(Request $request)
@@ -73,14 +79,14 @@ class PurchaseController extends Controller
         $is_successful = $this->paymentRepository->getStatus($gateway, $request);
         if(!$is_successful){
             $error = 'پرداخت ناموفق بود';
-            return redirect()->away(env('FRONT_URL')."result?result=failed&error=".$error);
+            return redirect()->away(env('FRONT_URL').env('PAYMENT_REDIRECT')."?status=failed&error=".$error);
         }
 
         $uu_id = $this->paymentRepository->getUuId($gateway, $request);
         $transaction = $this->transactionRepository->findWhereFirst('uu_id', $uu_id);
         if(!$transaction){
             $error = 'تراکنش یافت نشد';
-            return redirect()->away(env('FRONT_URL')."result?result=failed&error=".$error);
+            return redirect()->away(env('FRONT_URL').env('PAYMENT_REDIRECT')."?status=failed&error=".$error);
         }
         
         $data = $this->paymentRepository->prepareVerifyProcessingData($gateway, $request);
@@ -88,14 +94,15 @@ class PurchaseController extends Controller
         $trans_id = $this->paymentRepository->getTransId($gateway, $response);
         if($this->transactionRepository->exists('trans_id', $trans_id)){
             $error = 'این تراکنش قبلا ثبت شده است';
-            return redirect()->away(env('FRONT_URL')."result?result=failed&error=".$error);
+            return redirect()->away(env('FRONT_URL').env('PAYMENT_REDIRECT')."?status=failed&error=".$error);
         }
 
         $transaction = $this->handleUpdateTransaction($gateway, $transaction->id, $response);
-        $this->handleUpdateOrder($transaction->order->id, ['status'=>'completed']);
+        // $this->handleUpdateOrder($transaction->order->id, ['status'=>'completed']);
 
         PaymentSuccessful::dispatch($transaction);
-        return redirect()->away(env('FRONT_URL')."result?result=successful");
+        // return redirect()->away(env('FRONT_URL')."result?result=successful");
+        return redirect()->away(env('FRONT_URL').env('PAYMENT_REDIRECT')."?status=successful");
     }
 
 
@@ -146,7 +153,8 @@ class PurchaseController extends Controller
     protected function handleApplyCoupon($request, $order){
         $data = [
             'code' => $request->discount_code,
-            'total_amount' => $order->total_amount
+            'total_amount' => $order->total_amount,
+            'user_id' => $request->user()->id
         ];
 
         $coupon = $this->couponRepository->verifyCoupon($data);
@@ -177,6 +185,7 @@ class PurchaseController extends Controller
         $books = $this->getbooksbyIds($book_ids);
         $total_amount = 0;
         $total_items = 0;
+
         foreach ($data['items'] as $item){
             $item = array_merge(
                 ['order_id'=>$order->id], 

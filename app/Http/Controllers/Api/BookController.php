@@ -23,26 +23,17 @@ class BookController extends Controller
 
     public function index()
     {
-        // $filters = [
-        //     'author_id' => $request->input('author_id'),
-        //     'publisher_id' => $request->input('publisher_id'),
-        // ];
-        // $sort_by = $request->query('sort_by', 'latest');
 
         $books = $this->bookRepository->withCriteria([
             new Sort(),
             new Filter(),
         ])->getAllBooks(20);
 
-        // $books = Book::sort($request)->get();
-
-        // dd($books);
         $pagination = [
             'currentPage' => $books->currentPage(),
             'lastPage' => $books->lastPage(),
             'total' => $books->total(),
             'perPage' => $books->perPage(),
-            // 'links' => $books->collection()->response()->getData()->links,
         ];
 
         return Response::success(null, BookResource::collection($books), $pagination);
@@ -90,7 +81,11 @@ class BookController extends Controller
     }
 
     public function bestSellers(){
-        $books = $this->bookRepository->getBestSellersBooks(10);
+        // $books = $this->bookRepository->getBestSellersBooks(10);
+        $books = $this->bookRepository->withCriteria([
+            new Sort(),
+        ])->getBestSellersBooks(10);
+
         return Response::success(null, BookResource::collection($books));
     }
 

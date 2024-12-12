@@ -61,19 +61,31 @@ class AppServiceProvider extends ServiceProvider
             return preg_replace('/\s+/u', $separator, trim($string));
         });
 
+        // Response::macro('success', function($message, $data, $pagination = null) {
+        //     return response()->json([
+        //         'status' => 1,
+        //         'message' => $message,
+        //         'data' => $data,
+        //         'pagination' => $pagination
+        //     ]);
+        // });
+
         Response::macro('success', function($message, $data, $pagination = null) {
-            return response()->json([
+            $response = [
                 'status' => 1,
                 'message' => $message,
                 'data' => $data,
-                'pagination' => $pagination
-            ]);
+            ];
+            
+            if (!is_null($pagination)) $response['pagination'] = $pagination;
+            
+            return response()->json($response);
         });
+        
 
         Response::macro('error', function($message, $data, $code = 400) {
             return response()->json([
                 'status' => 0,
-                // 'error' => $message,
                 'message' => $message,
                 'data' => $data,
             ], $code);

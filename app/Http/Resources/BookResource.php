@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+// use Morilog\Jalali\Jalalian;
 
 class BookResource extends JsonResource
 {
@@ -22,6 +23,7 @@ class BookResource extends JsonResource
             "price" => $this->price,
             "quantity" => $this->quantity,
             "created_at" => $this->created_at,
+            // 'created_at' => Jalalian::fromDateTime($this->created_at)->format('Y/m/d H:i'),
             // "aa" => $this->author,
         ];
 
@@ -35,7 +37,7 @@ class BookResource extends JsonResource
             $data['author'] = $this->author;
             $data['publisher'] = $this->publisher;
             $data['category'] = $this->category;
-            $data['comments'] =  CommentResource::collection($this->comments->sortDesc());
+            $data['comments'] =  CommentResource::collection($this->comments->where('is_visible',1)->sortDesc());
         }
 
         if ($request->query('include_category', false)) {

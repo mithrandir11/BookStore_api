@@ -16,12 +16,12 @@ class CouponController extends Controller
         $this->couponRepository = $couponRepository;
     }
 
-    public function findByCode($code){
+    public function verfyCode(Request $request){
         try {
-            $coupon = $this->couponRepository->verifyCoupon(['code'=>$code]);
+            $coupon = $this->couponRepository->verifyCoupon(['code'=>$request->code, 'user_id'=>$request->user()->id]);
             return Response::success(null, $coupon);
         } catch (Exception $error) {
-            return Response::error($error->getMessage(), null, 200);
+            return Response::error($error->getMessage(), null);
         }
     }
 }

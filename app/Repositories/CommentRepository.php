@@ -17,7 +17,7 @@ class CommentRepository implements ICommentRepository
 
     public function getComments($commentable)
     {
-        return $commentable->comments()->latest()->get();
+        return $commentable->comments()->where('is_visible',1)->latest()->get();
     }
 
     public function create(array $data, $commentable)

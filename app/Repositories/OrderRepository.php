@@ -32,4 +32,13 @@ class OrderRepository implements IOrderRepository
         return  $this->model->where('user_id', $user_id)->latest()->paginate(10);
     }
 
+    public function userHasUsedCoupon($userId, $couponId)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->where('coupon_id', $couponId)
+            ->where('status', 'completed')
+            ->exists();
+    }
+
 }

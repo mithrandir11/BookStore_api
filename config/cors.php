@@ -19,6 +19,8 @@ return [
 
     'allowed_methods' => ['*'],
 
+
+    // 'allowed_origins' => ['https://nuxt-9atmbr.chbk.app'],
     'allowed_origins' => ['*'],
     // 'allowed_origins' => [env('FRONT_URL'),'localhost:3000','localhost'],
 

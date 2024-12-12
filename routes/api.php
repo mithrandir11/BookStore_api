@@ -56,7 +56,7 @@ Route::post('/orderItem/create', [OrderItemController::class, 'createOrderItem']
 
 // Route::get('/transactions/userTransactions', [TransactionController::class, 'getUserTransactions'])->middleware('auth:sanctum');
 
-Route::post('/coupons/findByCode/{code}', [CouponController::class, 'findByCode']);
+Route::post('/coupons/verfyCode', [CouponController::class, 'verfyCode'])->middleware('auth:sanctum');
 
 Route::post('purchaseProcessing', [PurchaseController::class, 'handlePurchaseProcessing'])->middleware('auth:sanctum');
 Route::match(['get', 'post'], 'verifyProcessing', [PurchaseController::class, 'handleVerifyProcessing'])->name('handleVerifyProcessing');
